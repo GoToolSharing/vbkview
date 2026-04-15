@@ -23,7 +23,7 @@ It is built on top of [`vbktoolkit`](https://github.com/GoToolSharing/vbktoolkit
 ### Install latest
 
 ```bash
-go install github.com/GoToolSharing/vbkview/cmd/vbkview@latest
+go install github.com/GoToolSharing/vbkview@latest
 ```
 
 ### Build locally
@@ -31,19 +31,23 @@ go install github.com/GoToolSharing/vbkview/cmd/vbkview@latest
 ```bash
 git clone https://github.com/GoToolSharing/vbkview
 cd vbkview
-go build -o vbkview ./cmd/vbkview
+go build -o vbkview .
 ```
 
 ## Quick Start
 
 ```bash
-vbkview --help
+# Run directly from source
+go run . --help
+
+# Or run the built binary
+./vbkview --help
 
 # Interactive shell
-vbkview shell --vbk /path/to/backup.vbk
+go run . shell --vbk /path/to/backup.vbk
 
 # List root directory
-vbkview ls --vbk /path/to/backup.vbk /
+go run . ls --vbk /path/to/backup.vbk /
 ```
 
 ## Global Flags
@@ -131,7 +135,7 @@ vbk[/some/folder]> quit
 
 ```bash
 go test ./...
-go build ./cmd/vbkview
+go build .
 ```
 
 If you work locally with `vbktoolkit`, use a `replace` directive in `go.mod`:
