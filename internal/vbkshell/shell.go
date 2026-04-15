@@ -72,8 +72,12 @@ func New(vbkPath string, verify bool) (*Shell, error) {
 	sh := &Shell{vbkPath: vbkPath, fh: fh, v: v, cwd: "/", active: 0}
 	sh.disks, _ = sh.findVirtualDisks()
 	if guest, err := v.DiscoverGuest(); err == nil {
-		sh.guest = guest
-		sh.active = guest.DefaultIndex()
+		if len(guest.Volumes()) > 0 {
+			sh.guest = guest
+			sh.active = guest.DefaultIndex()
+		} else {
+			_ = guest.Close()
+		}
 	}
 	return sh, nil
 }
