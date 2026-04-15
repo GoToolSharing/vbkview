@@ -9,12 +9,14 @@ It is built on top of [`vbktoolkit`](https://github.com/GoToolSharing/vbktoolkit
 
 ## Features
 
-- Browse VBK internal filesystem (`ls`, `tree`, `stat`)
+- Browse VBK internal filesystem and guest filesystem volumes (`ls`, `tree`, `stat`)
 - Read file content (`cat`)
 - Extract files (`get`)
 - Find files by name (`find`)
 - Search text in files (`grep`)
 - List embedded virtual disk files (`disks`)
+- Auto-detect guest partitions from embedded virtual disks (`volumes`, `use`)
+- Interactive tab-completion for commands and paths in shell mode
 - JSON output mode for automation (`--json`)
 - Stable exit codes for common error categories
 
@@ -69,13 +71,16 @@ go run . ls --vbk /path/to/backup.vbk /
 - `tree [path]` print directory tree (`--depth`)
 - `grep <pattern> [start]` search text (`-i`, `--max-bytes`)
 - `disks` list `.vhd`/`.vhdx` entries
-- `volumes` list available volumes abstraction
+- `volumes` list detected guest volumes (or fallback root volume)
 
 ## Examples
 
 ### Non-interactive usage
 
 ```bash
+# List detected guest volumes
+vbkview volumes --vbk /path/to/backup.vbk
+
 # Long listing
 vbkview ls -l --vbk /path/to/backup.vbk /some/dir
 
@@ -119,6 +124,12 @@ vbk[/some/folder]> grep "password" /
 vbk[/some/folder]> get file.txt ./file.txt
 vbk[/some/folder]> quit
 ```
+
+In interactive mode, press `Tab` to autocomplete:
+
+- command names (`ls`, `cat`, `get`, ...)
+- file and directory paths
+- `use` volume indexes
 
 ## Exit Codes
 

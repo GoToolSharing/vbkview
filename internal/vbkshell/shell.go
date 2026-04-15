@@ -1,18 +1,20 @@
 package vbkshell
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path"
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 
 	vbk "github.com/GoToolSharing/vbktoolkit"
 	"github.com/GoToolSharing/vbkview/internal/cli"
+	"github.com/peterh/liner"
 )
 
 type Shell struct {
@@ -21,6 +23,8 @@ type Shell struct {
 	v       *vbk.VBK
 	cwd     string
 	disks   []string
+	guest   *vbk.Guest
+	active  int
 }
 
 func (s *Shell) PWD() string {
@@ -65,12 +69,19 @@ func New(vbkPath string, verify bool) (*Shell, error) {
 		return nil, err
 	}
 
-	sh := &Shell{vbkPath: vbkPath, fh: fh, v: v, cwd: "/"}
+	sh := &Shell{vbkPath: vbkPath, fh: fh, v: v, cwd: "/", active: 0}
 	sh.disks, _ = sh.findVirtualDisks()
+	if guest, err := v.DiscoverGuest(); err == nil {
+		sh.guest = guest
+		sh.active = guest.DefaultIndex()
+	}
 	return sh, nil
 }
 
 func (s *Shell) Close() {
+	if s.guest != nil {
+		_ = s.guest.Close()
+	}
 	if s.fh != nil {
 		_ = s.fh.Close()
 	}
@@ -83,13 +94,20 @@ func (s *Shell) Run() error {
 	}
 	s.cmdHelp()
 
-	in := bufio.NewReader(os.Stdin)
+	lineReader := liner.NewLiner()
+	defer lineReader.Close()
+	lineReader.SetCtrlCAborts(true)
+	lineReader.SetCompleter(s.completeInput)
+
 	for {
-		fmt.Printf("vbk[%s]> ", s.cwd)
-		line, err := in.ReadString('\n')
+		line, err := lineReader.Prompt(s.prompt())
 		if errors.Is(err, io.EOF) {
 			fmt.Println()
 			return nil
+		}
+		if isPromptInterrupted(err) {
+			fmt.Println()
+			continue
 		}
 		if err != nil {
 			return err
@@ -99,6 +117,7 @@ func (s *Shell) Run() error {
 		if line == "" {
 			continue
 		}
+		lineReader.AppendHistory(line)
 
 		parts, err := cli.Split(line)
 		if err != nil {
@@ -226,13 +245,35 @@ func (s *Shell) Run() error {
 	}
 }
 
+func isPromptInterrupted(err error) bool {
+	if err == nil {
+		return false
+	}
+	if errors.Is(err, liner.ErrPromptAborted) {
+		return true
+	}
+	if errors.Is(err, syscall.EINTR) || errors.Is(err, fs.ErrClosed) {
+		return true
+	}
+	msg := strings.ToLower(err.Error())
+	return strings.Contains(msg, "interrupt") || strings.Contains(msg, "aborted")
+}
+
 func (s *Shell) resolve(p string) string {
 	return normalizePath(p, s.cwd)
 }
 
 func (s *Shell) cmdVolumes() {
 	for _, v := range s.VolumesInfo() {
-		fmt.Printf("* [%d] source=%q name=%q size=%s\n", v.Index, v.Source, v.Name, v.Size)
+		marker := " "
+		if v.Index == s.active {
+			marker = "*"
+		}
+		if s.guest != nil {
+			fmt.Printf("%s [%d] disk=%s volume=%d name=%q size=%s\n", marker, v.Index, v.Source, v.VolumeIndex, v.Name, v.Size)
+			continue
+		}
+		fmt.Printf("%s [%d] source=%q name=%q size=%s\n", marker, v.Index, v.Source, v.Name, v.Size)
 	}
 }
 
@@ -240,6 +281,14 @@ func (s *Shell) cmdUse(idx string) error {
 	i, err := strconv.Atoi(idx)
 	if err != nil {
 		return err
+	}
+	if s.guest != nil {
+		if i < 0 || i >= len(s.guest.Volumes()) {
+			return fmt.Errorf("invalid volume index: %d", i)
+		}
+		s.active = i
+		s.cwd = "/"
+		return nil
 	}
 	if i != 0 {
 		return fmt.Errorf("invalid volume index: %d (only 0 is available)", i)
@@ -278,6 +327,23 @@ func (s *Shell) cmdLS(p string, long bool) error {
 }
 
 func (s *Shell) cmdCD(p string) error {
+	if s.guest != nil {
+		vols := s.guest.Volumes()
+		if s.active < 0 || s.active >= len(vols) {
+			return fmt.Errorf("invalid active volume")
+		}
+		target := s.resolve(p)
+		isDir, err := vols[s.active].IsDir(target)
+		if err != nil {
+			return err
+		}
+		if !isDir {
+			return fmt.Errorf("%s is not a directory", target)
+		}
+		s.cwd = target
+		return nil
+	}
+
 	target := s.resolve(p)
 	item, err := s.v.Get(target, nil)
 	if err != nil {
@@ -338,7 +404,7 @@ func (s *Shell) cmdHelp() {
 	fmt.Print(
 		"Commands:\n" +
 			"  volumes                  List available volumes\n" +
-			"  use <idx>                Change active volume (0 only)\n" +
+			"  use <idx>                Change active volume\n" +
 			"  disks                    List .vhd/.vhdx entries in VBK\n" +
 			"  pwd                      Print current directory\n" +
 			"  ls [path]                List directory\n" +
@@ -481,4 +547,14 @@ func (s *Shell) walk(root string, fn func(p string, item *vbk.DirItem) error) er
 	}
 
 	return walkRec(normalizePath(root, "/"), start)
+}
+
+func (s *Shell) prompt() string {
+	if s.guest != nil {
+		vols := s.guest.Volumes()
+		if s.active >= 0 && s.active < len(vols) {
+			return fmt.Sprintf("vbk[%d:%s %s]> ", s.active, vols[s.active].Name, s.cwd)
+		}
+	}
+	return fmt.Sprintf("vbk[%s]> ", s.cwd)
 }

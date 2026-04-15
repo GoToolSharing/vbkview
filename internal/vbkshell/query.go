@@ -1,6 +1,7 @@
 package vbkshell
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -8,10 +9,11 @@ import (
 )
 
 type VolumeInfo struct {
-	Index  int    `json:"index"`
-	Source string `json:"source"`
-	Name   string `json:"name"`
-	Size   string `json:"size"`
+	Index       int    `json:"index"`
+	Source      string `json:"source"`
+	Name        string `json:"name"`
+	Size        string `json:"size"`
+	VolumeIndex int    `json:"volume_index,omitempty"`
 }
 
 type EntryInfo struct {
@@ -33,6 +35,21 @@ type GetResult struct {
 }
 
 func (s *Shell) VolumesInfo() []VolumeInfo {
+	if s.guest != nil {
+		volumes := s.guest.Volumes()
+		out := make([]VolumeInfo, 0, len(volumes))
+		for _, vol := range volumes {
+			out = append(out, VolumeInfo{
+				Index:       vol.Index,
+				Source:      vol.DiskPath,
+				Name:        vol.Name,
+				Size:        humanSize(vol.Size),
+				VolumeIndex: vol.VolumeIndex,
+			})
+		}
+		return out
+	}
+
 	return []VolumeInfo{{
 		Index:  0,
 		Source: s.vbkPath,
@@ -48,6 +65,32 @@ func (s *Shell) DisksList() []string {
 }
 
 func (s *Shell) LSEntries(p string) ([]EntryInfo, error) {
+	if s.guest != nil {
+		if s.active < 0 || s.active >= len(s.guest.Volumes()) {
+			return nil, fmt.Errorf("invalid active volume")
+		}
+		vol := s.guest.Volumes()[s.active]
+		target := s.cwd
+		if strings.TrimSpace(p) != "" {
+			target = s.resolve(p)
+		}
+		entries, err := vol.ListDir(target)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]EntryInfo, 0, len(entries))
+		for _, e := range entries {
+			out = append(out, EntryInfo{
+				Name:      e.Name,
+				Path:      e.Path,
+				IsDir:     e.IsDir,
+				SizeBytes: e.Size,
+				SizeHuman: humanSize(e.Size),
+			})
+		}
+		return out, nil
+	}
+
 	target := s.cwd
 	if strings.TrimSpace(p) != "" {
 		target = s.resolve(p)
@@ -100,6 +143,43 @@ func (s *Shell) LSEntries(p string) ([]EntryInfo, error) {
 }
 
 func (s *Shell) FindMatches(name, start string) ([]string, error) {
+	if s.guest != nil {
+		if s.active < 0 || s.active >= len(s.guest.Volumes()) {
+			return nil, fmt.Errorf("invalid active volume")
+		}
+		vol := s.guest.Volumes()[s.active]
+		root := s.cwd
+		if strings.TrimSpace(start) != "" {
+			root = s.resolve(start)
+		}
+		needle := strings.ToLower(name)
+
+		var out []string
+		var walk func(string) error
+		walk = func(cur string) error {
+			entries, err := vol.ListDir(cur)
+			if err != nil {
+				return err
+			}
+			for _, e := range entries {
+				if e.IsDir {
+					if err := walk(e.Path); err != nil {
+						continue
+					}
+					continue
+				}
+				if strings.Contains(strings.ToLower(e.Name), needle) {
+					out = append(out, e.Path)
+				}
+			}
+			return nil
+		}
+		if err := walk(root); err != nil {
+			return nil, err
+		}
+		return out, nil
+	}
+
 	root := s.cwd
 	if strings.TrimSpace(start) != "" {
 		root = s.resolve(start)
