@@ -1,3 +1,5 @@
+github.com/GoToolSharing/vbktoolkit v0.0.0-20260415121235-c470896a45cc h1:f45dYxOqw2ED2WUVnBvmx47oHVscZsHZov4IWKS2WdY=
+github.com/GoToolSharing/vbktoolkit v0.0.0-20260415121235-c470896a45cc/go.mod h1:Aw3ABY+92QbbLyl7uOrJxD96f2ljUnVypSf1TW+aVZQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 h1:El6M4kTTCOh6aBiKaUGG7oYTSPP8MxqL4YI3kZKwcP4=
 github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510/go.mod h1:pupxD2MaaD3pAXIBCelhxNneeOaAeabZDe5s4K6zSpQ=
