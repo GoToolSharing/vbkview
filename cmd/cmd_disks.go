@@ -8,7 +8,7 @@ import (
 func newDisksCmd(opts *globalOptions) *cobra.Command {
 	return &cobra.Command{
 		Use:   "disks",
-		Short: "List .vhd/.vhdx entries found in VBK",
+		Short: "List .vhd/.vhdx/.vmdk entries found in VBK",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.json {

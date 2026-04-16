@@ -70,7 +70,7 @@ go run . ls --vbk /path/to/backup.vbk /
 - `stat [path]` show metadata (`--props`)
 - `tree [path]` print directory tree (`--depth`)
 - `grep <pattern> [start]` search text (`-i`, `--max-bytes`)
-- `disks` list `.vhd`/`.vhdx` entries
+- `disks` list `.vhd`/`.vhdx`/`.vmdk` entries
 - `volumes` list detected guest volumes (or fallback root volume)
 
 ## Examples

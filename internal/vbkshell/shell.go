@@ -396,7 +396,7 @@ func (s *Shell) cmdFind(name, start string) error {
 func (s *Shell) cmdDisks() {
 	disks := s.DisksList()
 	if len(disks) == 0 {
-		fmt.Println("No .vhd/.vhdx entries found in this VBK")
+		fmt.Println("No .vhd/.vhdx/.vmdk entries found in this VBK")
 		return
 	}
 	for i, d := range disks {
@@ -409,7 +409,7 @@ func (s *Shell) cmdHelp() {
 		"Commands:\n" +
 			"  volumes                  List available volumes\n" +
 			"  use <idx>                Change active volume\n" +
-			"  disks                    List .vhd/.vhdx entries in VBK\n" +
+			"  disks                    List .vhd/.vhdx/.vmdk entries in VBK\n" +
 			"  pwd                      Print current directory\n" +
 			"  ls [path]                List directory\n" +
 			"  ll [path]                List directory (long)\n" +
@@ -508,7 +508,7 @@ func (s *Shell) findVirtualDisks() ([]string, error) {
 			return nil
 		}
 		low := strings.ToLower(item.Name)
-		if strings.HasSuffix(low, ".vhd") || strings.HasSuffix(low, ".vhdx") {
+		if strings.HasSuffix(low, ".vhd") || strings.HasSuffix(low, ".vhdx") || strings.HasSuffix(low, ".vmdk") {
 			out = append(out, p)
 		}
 		return nil
