@@ -13,6 +13,7 @@ type VolumeInfo struct {
 	Source      string `json:"source"`
 	Name        string `json:"name"`
 	Size        string `json:"size"`
+	FSType      string `json:"fs_type,omitempty"`
 	VolumeIndex int    `json:"volume_index,omitempty"`
 }
 
@@ -44,6 +45,7 @@ func (s *Shell) VolumesInfo() []VolumeInfo {
 				Source:      vol.DiskPath,
 				Name:        vol.Name,
 				Size:        humanSize(vol.Size),
+				FSType:      vol.FSType(),
 				VolumeIndex: vol.VolumeIndex,
 			})
 		}

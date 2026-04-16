@@ -274,7 +274,7 @@ func (s *Shell) cmdVolumes() {
 			marker = "*"
 		}
 		if s.guest != nil {
-			fmt.Printf("%s [%d] disk=%s volume=%d name=%q size=%s\n", marker, v.Index, v.Source, v.VolumeIndex, v.Name, v.Size)
+			fmt.Printf("%s [%d] disk=%s volume=%d fs=%s name=%q size=%s\n", marker, v.Index, v.Source, v.VolumeIndex, v.FSType, v.Name, v.Size)
 			continue
 		}
 		fmt.Printf("%s [%d] source=%q name=%q size=%s\n", marker, v.Index, v.Source, v.Name, v.Size)
