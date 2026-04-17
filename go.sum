@@ -1,5 +1,7 @@
 github.com/GoToolSharing/vbktoolkit v0.0.0-20260416200859-9cf81749bcc1 h1:mWyY3mBDhzRATsRsdmJoun4NFBRWNSZhVjevmkSA0rY=
 github.com/GoToolSharing/vbktoolkit v0.0.0-20260416200859-9cf81749bcc1/go.mod h1:7sFiWmYvn8X1F8HAK//sirX1q9rFdFYUQLyf3d1FbGg=
+github.com/GoToolSharing/vbktoolkit v0.0.0-20260417173155-98770b9f5306 h1:/phvmjjDMafJgKDrjto70hwXKu7EJ841Q/NQ+9DKgYQ=
+github.com/GoToolSharing/vbktoolkit v0.0.0-20260417173155-98770b9f5306/go.mod h1:7sFiWmYvn8X1F8HAK//sirX1q9rFdFYUQLyf3d1FbGg=
 github.com/Velocidex/go-ext4 v0.0.0-20250510085914-b0b955af0359 h1:IPYiFWk8IlTOQQ/5ns69J4uzFCXXDoAEUtShTzGRoys=
 github.com/Velocidex/go-ext4 v0.0.0-20250510085914-b0b955af0359/go.mod h1:Sbqqh1t+nYXmNWw0dZC8LOIxP7z5Wg94SP+4Ej1QZqg=
 github.com/Velocidex/go-vhdx v0.0.0-20250511013458-5cba970cdeda h1:Q0pdD/aAUCmTv3ndK+m0yxQU1WdBLKEGPHEs68+w+8I=

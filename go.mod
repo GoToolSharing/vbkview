@@ -3,7 +3,7 @@ module github.com/GoToolSharing/vbkview
 go 1.22
 
 require (
-	github.com/GoToolSharing/vbktoolkit v0.0.0-20260416200859-9cf81749bcc1
+	github.com/GoToolSharing/vbktoolkit v0.0.0-20260417173155-98770b9f5306
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/peterh/liner v1.2.2
 	github.com/spf13/cobra v1.10.2
