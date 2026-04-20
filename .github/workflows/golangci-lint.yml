@@ -1,0 +1,37 @@
+name: golangci-lint
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version: 1.26
+
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v9
+      with:
+        version: latest
+        skip-cache: true
+        skip-save-cache: true
+
+    - name: Upload lint results
+      uses: actions/upload-artifact@v7
+      if: failure()
+      with:
+        name: golangci-lint-results
+        path: golangci-lint-report.txt
+

@@ -1,6 +1,6 @@
 module github.com/GoToolSharing/vbkview
 
-go 1.22
+go 1.23.0
 
 require (
 	github.com/GoToolSharing/vbktoolkit v0.0.0-20260420090906-925abf074c28
