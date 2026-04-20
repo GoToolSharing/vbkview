@@ -99,7 +99,7 @@ func (s *Shell) Run() error {
 	s.cmdHelp()
 
 	lineReader := liner.NewLiner()
-	defer lineReader.Close()
+	defer closeWithWarning("line reader", lineReader)
 	lineReader.SetCtrlCAborts(true)
 	lineReader.SetCompleter(s.completeInput)
 

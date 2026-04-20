@@ -95,7 +95,7 @@ func (s *Shell) ExtractWithOptions(src, dst string, opts ExtractOptions) (GetRes
 		if err != nil {
 			return GetResult{}, err
 		}
-		defer out.Close()
+		defer closeWithWarning(outPath, out)
 
 		if opts.Resume {
 			if st, statErr := out.Stat(); statErr == nil {
@@ -154,7 +154,7 @@ func (s *Shell) ExtractWithOptions(src, dst string, opts ExtractOptions) (GetRes
 	if err != nil {
 		return GetResult{}, err
 	}
-	defer in.Close()
+	defer closeWithWarning(target, in)
 
 	res := GetResult{SourcePath: src, ResolvedPath: target, OutputPath: outPath}
 	startOffset := int64(0)
@@ -185,7 +185,7 @@ func (s *Shell) ExtractWithOptions(src, dst string, opts ExtractOptions) (GetRes
 	if err != nil {
 		return GetResult{}, err
 	}
-	defer out.Close()
+	defer closeWithWarning(outPath, out)
 
 	written, err := io.CopyBuffer(out, in, make([]byte, 1024*1024))
 	if err != nil {
@@ -250,7 +250,7 @@ func (s *Shell) CatData(src string, limit int64, forceBase64 bool) (CatResult, e
 	if err != nil {
 		return CatResult{}, err
 	}
-	defer stream.Close()
+	defer closeWithWarning(target, stream)
 
 	var data []byte
 	if limit >= 0 {
@@ -459,7 +459,7 @@ func (s *Shell) Grep(pattern, start string, opts GrepOptions) ([]GrepMatch, erro
 		if err != nil {
 			return nil
 		}
-		defer stream.Close()
+		defer closeWithWarning(p, stream)
 
 		reader := io.Reader(stream)
 		if opts.MaxBytes > 0 {
@@ -541,7 +541,7 @@ func sha256File(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer closeWithWarning(filePath, f)
 
 	h := sha256.New()
 	if _, err := io.Copy(h, f); err != nil {
