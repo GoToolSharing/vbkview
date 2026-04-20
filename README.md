@@ -16,6 +16,7 @@ It is built on top of [`vbktoolkit`](https://github.com/GoToolSharing/vbktoolkit
 - Search text in files (`grep`)
 - List embedded virtual disk files (`disks`)
 - Auto-detect guest partitions from embedded virtual disks (`volumes`, `use`)
+- Guest filesystem support: `NTFS`, `EXT4`, and `XFS`
 - Interactive tab-completion for commands and paths in shell mode
 - JSON output mode for automation (`--json`)
 - Stable exit codes for common error categories
