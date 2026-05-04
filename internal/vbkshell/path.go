@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func normalizePath(p, cwd string) string {
+func NormalizePath(p, cwd string) string {
 	p = strings.ReplaceAll(strings.TrimSpace(p), "\\", "/")
 	if p == "" {
 		if cwd == "" {

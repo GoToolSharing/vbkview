@@ -16,9 +16,9 @@ func TestNormalizePath(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := normalizePath(tt.in, tt.cwd)
+		got := NormalizePath(tt.in, tt.cwd)
 		if got != tt.want {
-			t.Fatalf("normalizePath(%q,%q)=%q, want %q", tt.in, tt.cwd, got, tt.want)
+			t.Fatalf("NormalizePath(%q,%q)=%q, want %q", tt.in, tt.cwd, got, tt.want)
 		}
 	}
 }

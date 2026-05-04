@@ -264,7 +264,7 @@ func isPromptInterrupted(err error) bool {
 }
 
 func (s *Shell) resolve(p string) string {
-	return normalizePath(p, s.cwd)
+	return NormalizePath(p, s.cwd)
 }
 
 func (s *Shell) cmdVolumes() {
@@ -550,7 +550,7 @@ func (s *Shell) walk(root string, fn func(p string, item *vbk.DirItem) error) er
 		return nil
 	}
 
-	return walkRec(normalizePath(root, "/"), start)
+	return walkRec(NormalizePath(root, "/"), start)
 }
 
 func (s *Shell) prompt() string {
