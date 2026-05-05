@@ -29,3 +29,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	www.velocidex.com/golang/go-ntfs v0.2.0 // indirect
 )
+
+replace github.com/GoToolSharing/vbktoolkit => github.com/borje/vbktoolkit v0.0.0-20260504111425-5840d2998ec8

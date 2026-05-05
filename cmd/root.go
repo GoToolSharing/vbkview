@@ -33,6 +33,7 @@ func NewRootCmd() *cobra.Command {
 	root.AddCommand(newLsCmd(opts))
 	root.AddCommand(newCatCmd(opts))
 	root.AddCommand(newGetCmd(opts))
+	root.AddCommand(newGetDiskCmd(opts))
 	root.AddCommand(newFindCmd(opts))
 	root.AddCommand(newStatCmd(opts))
 	root.AddCommand(newTreeCmd(opts))

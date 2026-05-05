@@ -14,6 +14,7 @@ It is built on top of [`vbktoolkit`](https://github.com/GoToolSharing/vbktoolkit
 - Extract files (`get`)
 - Find files by name (`find`)
 - Search text in files (`grep`)
+- Extract virtual disks as flat raw images (`get-disk`)
 - List embedded virtual disk files (`disks`)
 - Auto-detect guest partitions from embedded virtual disks (`volumes`, `use`)
 - Guest filesystem support: `NTFS`, `EXT4`, and `XFS`
@@ -71,6 +72,7 @@ go run . ls --vbk /path/to/backup.vbk /
 - `stat [path]` show metadata (`--props`)
 - `tree [path]` print directory tree (`--depth`)
 - `grep <pattern> [start]` search text (`-i`, `--max-bytes`)
+- `get-disk <src> [dst]` extract virtual disk as flat raw image (`--sha256`)
 - `disks` list `.vhd`/`.vhdx`/`.vmdk` entries
 - `volumes` list detected guest volumes (or fallback root volume)
 
@@ -112,6 +114,19 @@ vbkview get --vbk /path/to/backup.vbk --sha256 <expected_sha256> /path/in/vbk/fi
 
 # JSON extraction result
 vbkview get --vbk /path/to/backup.vbk --json /path/in/vbk/file.bin ./file.bin
+```
+
+### Virtual disk extraction
+
+```bash
+# Extract a VMDK/VHD/VHDX as a flat raw image (multi-extent VMDKs reassembled automatically)
+vbkview get-disk --vbk /path/to/backup.vbk /vm/disk.vmdk ./disk.img
+
+# Extract with SHA-256 verification
+vbkview get-disk --vbk /path/to/backup.vbk --sha256 <expected_sha256> /vm/disk.vmdk ./disk.img
+
+# JSON output
+vbkview get-disk --vbk /path/to/backup.vbk --json /vm/disk.vmdk ./disk.img
 ```
 
 ### Interactive shell
